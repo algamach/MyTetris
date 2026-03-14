@@ -1,22 +1,18 @@
-﻿namespace MyTetris
+﻿using MyTetris.Figures;
+
+namespace MyTetris
 {
     internal abstract class Figure
     {
         public const int LENGTH = 4;
         public Block[] Blocks = new Block[LENGTH];
         private Color _color;
-        private bool _life = true;
+        private static readonly Random _random = new Random();
         public bool Life
         {
-            get 
-            { 
-                return _life; 
-            }
-            set 
-            { 
-                _life = value; 
-            }
+            get; private set;
         }
+        = true;
         public Color Color
         {
             get
@@ -67,31 +63,29 @@
             foreach (var block in Blocks)
                 block.Move(direction);
 
-            switch (Validation())
+            var validationResult = Validation();
+
+            if (validationResult == ValidationResult.SUCCESS)
             {
-                case ValidationResult.BORDER:
-                    foreach (var block in Blocks)
-                        block.MoveReverse(direction);
-                    Draw();
-                    break;
-                case ValidationResult.BLOCKS_OR_DOWN_BORDER:
-                    if (direction == Direction.DOWN)
-                    {
-                        foreach (var block in Blocks)
-                        {
-                            block.MoveReverse(direction);
-                            block.AddBlockOnField(Color);                            
-                        }
-                        Draw();
-                        Life = false;
-                        Field.CheckDeleteLine();
-                        CheckIsGameOver();
-                    }
-                    else goto case ValidationResult.BORDER;
-                    break;
-                case ValidationResult.SUCCESS:
-                    Draw();
-                    break;
+                Draw();
+            }
+            else if (validationResult == ValidationResult.BORDER || (validationResult == ValidationResult.BLOCKS_OR_DOWN_BORDER && direction != Direction.DOWN))
+            {
+                foreach (var block in Blocks)
+                    block.MoveReverse(direction);
+                Draw();
+            }
+            else
+            {
+                foreach (var block in Blocks)
+                {
+                    block.MoveReverse(direction);
+                    block.AddBlockOnField(Color);
+                }
+                Draw();
+                Life = false;
+                Field.CheckDeleteLine();
+                CheckIsGameOver();
             }
         }
 
@@ -119,8 +113,7 @@
         public abstract void RotateReverse();
         public static Figure GetRandomFigure(int x, int y)
         {
-            Random random = new Random();
-            int randomInt = random.Next(0, 7);
+            int randomInt = _random.Next(0, 7);
             switch (randomInt)
             {
                 case 0:

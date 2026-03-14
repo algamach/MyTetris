@@ -1,4 +1,4 @@
-﻿namespace MyTetris
+﻿namespace MyTetris.Figures
 {
     internal class L : Figure
     {
