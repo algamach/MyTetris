@@ -68,9 +68,12 @@
         public static void Inint(ref Figure currentFigure, ref Figure nextFigure)
         {
             GetFirstFigures(ref currentFigure, ref nextFigure);
-
-            Console.SetWindowSize(60, 22);
-            Console.SetBufferSize(60, 22);
+            
+            if (OperatingSystem.IsWindows())
+            {
+                Console.SetWindowSize(60, 22);
+                Console.SetBufferSize(60, 22);
+            }
 
             for (int i = 0; i < 10; i++)
                 for (int j = 0; j < 20; j++)
